@@ -77,7 +77,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                 for article in news[:7]:
                     if article['title'] != "[Removed]" and article['description'] != "[Removed]":
                         articles = articles + article['title'] + " - " + article['description'] + "\n"
-                report = self.respond(f"summarize these headlines into a news report with witty commentary where appropriate. do not repeat stories. \n{articles}")
+                report = self.respond(f"summarize these headlines into a news report with witty commentary where appropriate.\n{articles}")
                 lines = self.chop(report)
                 #send lines to channel
                 for line in lines:
@@ -138,7 +138,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
         else:
             persona = self.types[type]
         #create system prompt
-        personality = f"assume the personality of {persona} with a name you make up and roleplay as them.  do not tell me who you work for."
+        personality = f"assume the personality of {persona} with a name you make up and roleplay as them."
         response = openai.ChatCompletion.create(model='gpt-3.5-turbo',
                                                 temperature=1,
                                                 messages=({"role": "system", "content": personality},
