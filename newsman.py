@@ -45,6 +45,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
         # Handle messages in the channel
         nick = event.source.nick
         message = event.arguments[0]
+        exclude = {None, "[Removed]"}
         type = message.lstrip("!")
         if type.startswith("weather"):
             if " " in type:
@@ -58,10 +59,6 @@ class Newsman(irc.bot.SingleServerIRCBot):
         if type in self.types:
             #get weather report
             if type == "weather":
-                
-                # if location == "":
-                #     connection.privmsg(self.channel, "Please try again with a location.")
-                # else:
                 weather = self.get_weather(location)
                 #generate the AI weather report
                 report = self.respond(f"report this weather in one paragraph, you can skip barometric pressure, visibility, UV index and other less important details. \n{weather}", type)
@@ -78,9 +75,9 @@ class Newsman(irc.bot.SingleServerIRCBot):
                 if news != None and news != "429":
                     #grab a limited amout of headlines and descriptions
                     for article in news[:5]:
-                        #check for removed content
-                        if article['title'] != "[Removed]" and article['description'] != "[Removed]":
-                            articles = articles + article['title'] + " - " + article['description'] + "\n"
+                        if article['title'] or article['description'] in exclude:
+                            continue
+                        articles = articles + article['title'] + " - " + article['description'] + "\n"
                     #create AI news report
                     report = self.respond(f"summarize these headlines into a witty {type} news report.\n{articles}", type)
                     #chop it up for irc length limit
@@ -99,8 +96,9 @@ class Newsman(irc.bot.SingleServerIRCBot):
             news = self.get_news()
             if news != None and news != "429":
                 for article in news[:5]:
-                    if article['title'] != "[Removed]" and article['description'] != "[Removed]":
-                        articles = articles + article['title'] + " - " + article['description'] + "\n"
+                    if article['title'] or article['description'] in exclude:
+                        continue
+                    articles = articles + article['title'] + " - " + article['description'] + "\n"
                 report = self.respond(f"summarize these headlines into a witty news report.\n{articles}")
                 lines = self.chop(report)
                 #send lines to channel
@@ -201,7 +199,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         return newlines  # Return the list of wrapped lines
 
-                
+                           
 if __name__ == "__main__":
     #API keys
     openai.api_key = "API_KEY"
