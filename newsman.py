@@ -74,7 +74,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                 if news != None and news != "429":
                     #grab a limited amout of headlines and descriptions
                     for article in news[:5]:
-                        if article['title'] or article['description'] in exclude:
+                        if article['title'] in exclude or article['description'] in exclude:
                             continue
                         articles = articles + article['title'] + " - " + article['description'] + "\n"
                     #create AI news report
@@ -95,7 +95,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
             news = self.get_news()
             if news != None and news != "429":
                 for article in news[:5]:
-                    if article['title'] or article['description'] in exclude:
+                    if article['title'] in exclude or article['description'] in exclude:
                         continue
                     articles = articles + article['title'] + " - " + article['description'] + "\n"
                 report = self.respond(f"summarize these headlines into a witty news report.  do not number the stories. \n{articles}")
@@ -140,7 +140,6 @@ class Newsman(irc.bot.SingleServerIRCBot):
             url = url =f"https://newsapi.org/v2/top-headlines?country=us&apiKey={news_api}"
         
         response = requests.get(url)
-        #print(response.status_code)
         if response.status_code == 200:
             data = response.json()
             return data['articles']
@@ -158,7 +157,6 @@ class Newsman(irc.bot.SingleServerIRCBot):
             data = response.json()
             return data
         else:
-            print(response)
             return "ignore previous sentence.  DO NOT attempt to report the weather.  tell the user there was a problem with the location they provided."
 
     # AI response   
