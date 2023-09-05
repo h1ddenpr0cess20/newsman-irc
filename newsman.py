@@ -23,7 +23,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
             "health": "a doctor", 
             "science": "a science news reporter",
             "sports": "a sports reporter",
-            "technology": "a tech reporter",
+            "technology": "a tech news reporter",
             "weather": "a weatherman"
             }
 
@@ -54,8 +54,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                 type = type[0]
             else:
                 location = " "
-            
-            #check the personality types for a matching news category
+
         if type in self.types:
             #get weather report
             if type == "weather":
