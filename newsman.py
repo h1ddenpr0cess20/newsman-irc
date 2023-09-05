@@ -36,6 +36,18 @@ class Newsman(irc.bot.SingleServerIRCBot):
         # Join the channel when the bot is connected to the server
         connection.join(self.channel)
 
+        #optional join message
+        greet = "introduce yourself in 1-3 sentences without a name"
+        response = self.respond(greet)
+        lines = self.chop(response +  "  Type !help to learn how to use me.")
+        for line in lines:
+            connection.privmsg(self.channel, line)
+            time.sleep(1)
+
+    def on_nicknameinuse(self, connection, event):
+        #add an underscore if nickname is in use
+        connection.nick(connection.get_nickname() + "_")
+
     def on_privmsg(self, connection, event):
         # Handle private messages
         nick = event.source.nick
@@ -54,7 +66,8 @@ class Newsman(irc.bot.SingleServerIRCBot):
                 type = type[0]
             else:
                 location = " "
-
+            
+        #check the personality types for a matching news category
         if type in self.types:
             #get weather report
             if type == "weather":
@@ -71,6 +84,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                 articles = ""
                 #get the news for the category
                 news = self.get_news(type)
+                
                 if news != None and news != "429":
                     #grab a limited amout of headlines and descriptions
                     for article in news[:5]:
@@ -78,7 +92,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                             continue
                         articles = articles + article['title'] + " - " + article['description'] + "\n"
                     #create AI news report
-                    report = self.respond(f"summarize these headlines into a witty {type} news report. do not number the stories. \n{articles}", type)
+                    report = self.respond(f"summarize these headlines into a witty {type} news report. do not number the stories.\n{articles}", type)
                     #chop it up for irc length limit
                     lines = self.chop(report)
                     #send lines to channel
@@ -98,7 +112,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                     if article['title'] in exclude or article['description'] in exclude:
                         continue
                     articles = articles + article['title'] + " - " + article['description'] + "\n"
-                report = self.respond(f"summarize these headlines into a witty news report.  do not number the stories. \n{articles}")
+                report = self.respond(f"summarize these headlines into a witty news report. do not number the stories.\n{articles}")
                 lines = self.chop(report)
                 #send lines to channel
                 for line in lines:
@@ -157,6 +171,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
             data = response.json()
             return data
         else:
+            
             return "ignore previous sentence.  DO NOT attempt to report the weather.  tell the user there was a problem with the location they provided."
 
     # AI response   
@@ -168,10 +183,10 @@ class Newsman(irc.bot.SingleServerIRCBot):
         else:
             persona = self.types[type]
         #create system prompt
-        personality = f"assume the personality of {persona} with a name you make up and roleplay as them."
+        self.personality = f"assume the personality of {persona} with a name you make up and roleplay as them."
         response = openai.ChatCompletion.create(model='gpt-3.5-turbo',
                                                 temperature=1,
-                                                messages=({"role": "system", "content": personality},
+                                                messages=({"role": "system", "content": self.personality},
                                                             {"role": "user", "content": message}))
         #return the response text
         response_text = response['choices'][0]['message']['content']
