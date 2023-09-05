@@ -21,9 +21,9 @@ class Newsman(irc.bot.SingleServerIRCBot):
             "entertainment": "an entertainment news reporter", 
             "general": "a network news anchor", 
             "health": "a doctor", 
-            "science": "a scientist",
+            "science": "a science news reporter",
             "sports": "a sports reporter",
-            "technology": "a geek",
+            "technology": "a tech news reporter",
             "weather": "a weatherman"
             }
 
