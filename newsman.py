@@ -17,7 +17,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         #personality types
         self.types = {
-            "business": "a businessman", 
+            "business": "a business news reporter", 
             "entertainment": "an entertainment news reporter", 
             "general": "a network news anchor", 
             "health": "a doctor", 
