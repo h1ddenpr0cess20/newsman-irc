@@ -44,6 +44,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
             connection.privmsg(self.channel, line)
             time.sleep(1)
 
+
     def on_nicknameinuse(self, connection, event):
         #add an underscore if nickname is in use
         connection.nick(connection.get_nickname() + "_")
@@ -87,12 +88,13 @@ class Newsman(irc.bot.SingleServerIRCBot):
                 
                 if news != None and news != "429":
                     #grab a limited amout of headlines and descriptions
+                    #change how this works later by grabbing more articles, filtering the bad ones, then select 5 of them.  current way can result in too few articles being reported.
                     for article in news[:5]:
                         if article['title'] in exclude or article['description'] in exclude:
                             continue
                         articles = articles + article['title'] + " - " + article['description'] + "\n"
                     #create AI news report
-                    report = self.respond(f"summarize these headlines into a witty {type} news report. do not number the stories.\n{articles}", type)
+                    report = self.respond(f"summarize these headlines into an entertaining {type} news report.\n{articles}", type)
                     #chop it up for irc length limit
                     lines = self.chop(report)
                     #send lines to channel
@@ -103,7 +105,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                     connection.privmsg(self.channel, "Try again later")
                 else:
                     connection.privmsg(self.channel, "error")
-        #no category news report
+        #no category news report.  will combine with the block above later
         if message == "!news":
             articles = ""
             news = self.get_news()
@@ -112,7 +114,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                     if article['title'] in exclude or article['description'] in exclude:
                         continue
                     articles = articles + article['title'] + " - " + article['description'] + "\n"
-                report = self.respond(f"summarize these headlines into a witty news report. do not number the stories.\n{articles}")
+                report = self.respond(f"summarize these headlines into an entertaining news report.\n{articles}")
                 lines = self.chop(report)
                 #send lines to channel
                 for line in lines:
@@ -143,7 +145,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
             "entertainment": "ign,entertainment-weekly,mtv-news,polygon", 
             "general": "cnn,abc-news,nbc-news,associated-press,cbs-news,fox-news,politico,reuters,the-hill,the-washington-post,usa-today", 
             "health": "medical-news-today", 
-            "science": "national-geographic,new-scientist,next-big-future",
+            "science": "national-geographic,new-scientist",
             "sports": "espn,bleacher-report,fox-sports,nfl-news,nhl-news",
             "technology": "ars-technica,engadget,hacker-news,recode,techcrunch,the-verge"}
         #if a personality type was chosen, use the appropriate source category
