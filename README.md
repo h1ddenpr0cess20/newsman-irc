@@ -1,5 +1,5 @@
 # newsman-irc
-An AI newsroom with news, sports, entertainment, science, technology, health, and weather for IRC powered by NewsAPI, WeatherAPI and OpenAI gpt-3.5-turbo which reports news by category in the style of a tv news report.
+An AI newsroom with news, business, sports, entertainment, science, technology, health, and weather for IRC powered by NewsAPI, WeatherAPI and OpenAI gpt-3.5-turbo which reports news by category in the style of a tv news report.
 
 ## Setup
 ```
