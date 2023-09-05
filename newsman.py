@@ -17,13 +17,13 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         #personality types
         self.types = {
-            "business": "a business news reporter", 
+            "business": "a businessman", 
             "entertainment": "an entertainment news reporter", 
             "general": "a network news anchor", 
-            "health": "a doctor who is also a health news reporter", 
-            "science": "a scientist who is also science news reporter",
+            "health": "a doctor", 
+            "science": "a scientist",
             "sports": "a sports reporter",
-            "technology": "a tech news reporter"}
+            "technology": "a geek"}
 
     def on_welcome(self, connection, event):
         #if nick has a password
@@ -53,12 +53,12 @@ class Newsman(irc.bot.SingleServerIRCBot):
             news = self.get_news(type)
             if news != None and news != "429":
                 #grab a limited amout of headlines and descriptions
-                for article in news[:7]:
+                for article in news[:5]:
                     #check for removed content
                     if article['title'] != "[Removed]" and article['description'] != "[Removed]":
                         articles = articles + article['title'] + " - " + article['description'] + "\n"
                 #create AI news report
-                report = self.respond(f"summarize these headlines into a {type} news report with witty commentary where appropriate\n{articles}", type)
+                report = self.respond(f"summarize these headlines into a witty {type} news report.\n{articles}", type)
                 #chop it up for irc length limit
                 lines = self.chop(report)
                 #send lines to channel
@@ -74,10 +74,10 @@ class Newsman(irc.bot.SingleServerIRCBot):
             articles = ""
             news = self.get_news()
             if news != None and news != "429":
-                for article in news[:7]:
+                for article in news[:5]:
                     if article['title'] != "[Removed]" and article['description'] != "[Removed]":
                         articles = articles + article['title'] + " - " + article['description'] + "\n"
-                report = self.respond(f"summarize these headlines into a news report with witty commentary where appropriate.\n{articles}")
+                report = self.respond(f"summarize these headlines into a witty news report.\n{articles}")
                 lines = self.chop(report)
                 #send lines to channel
                 for line in lines:
@@ -119,7 +119,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
             url = url =f"https://newsapi.org/v2/top-headlines?country=us&apiKey={news_api}"
         
         response = requests.get(url)
-        print(response.status_code)
+        #print(response.status_code)
         if response.status_code == 200:
             data = response.json()
             return data['articles']
