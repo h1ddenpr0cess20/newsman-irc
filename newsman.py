@@ -21,9 +21,9 @@ class Newsman(irc.bot.SingleServerIRCBot):
             "entertainment": "an entertainment news reporter", 
             "general": "a network news anchor", 
             "health": "a doctor", 
-            "science": "a scientist",
+            "science": "a science news reporter",
             "sports": "a sports reporter",
-            "technology": "a geek",
+            "technology": "a tech reporter",
             "weather": "a weatherman"
             }
 
@@ -199,7 +199,6 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         return newlines  # Return the list of wrapped lines
 
-                           
 if __name__ == "__main__":
     #API keys
     openai.api_key = "API_KEY"
