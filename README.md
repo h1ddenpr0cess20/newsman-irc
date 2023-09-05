@@ -1,11 +1,11 @@
 # newsman-irc
-An AI newsroom for IRC powered by NewsAPI and OpenAI gpt-3.5-turbo which reports news by category in the style of a tv news report
+An AI newsroom for IRC which reports news by category in the style of a tv news report, including general, business, sports, entertainment, science, technology, health, and weather.  Powered by NewsAPI, WeatherAPI and OpenAI gpt-3.5-turbo.
 
 ## Setup
 ```
 pip3 install openai irc
 ```
-Fill in your [OpenAI API](https://platform.openai.com/signup) key, [NewsAPI](https://newsapi.org/account) key, IRC server, username, and channel
+Fill in your [OpenAI API](https://platform.openai.com/signup) key, [NewsAPI](https://newsapi.org/account) key, [WeatherAPI](https://www.weatherapi.com/my/) key, IRC server, username, and channel
 
 ## Use
 ```
@@ -14,21 +14,20 @@ python3 newsman.py
 
 ### Avaiable commands
 
-**!news** _news report with no category_
+!news _news report with no category_
 
-**!business**
+!business
 
-**!entertainment**
+!entertainment
 
-**!general**
+!general
 
-**!health**
+!health
 
-**!science**
+!science
 
-**!sports**
+!sports
 
-**!technology**
+!technology
 
-
-Weather coming soon
+!weather _location_
