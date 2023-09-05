@@ -78,7 +78,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                             continue
                         articles = articles + article['title'] + " - " + article['description'] + "\n"
                     #create AI news report
-                    report = self.respond(f"summarize these headlines into a witty {type} news report.\n{articles}", type)
+                    report = self.respond(f"summarize these headlines into a witty {type} news report. do not number the stories. \n{articles}", type)
                     #chop it up for irc length limit
                     lines = self.chop(report)
                     #send lines to channel
@@ -98,7 +98,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                     if article['title'] or article['description'] in exclude:
                         continue
                     articles = articles + article['title'] + " - " + article['description'] + "\n"
-                report = self.respond(f"summarize these headlines into a witty news report.\n{articles}")
+                report = self.respond(f"summarize these headlines into a witty news report.  do not number the stories. \n{articles}")
                 lines = self.chop(report)
                 #send lines to channel
                 for line in lines:
