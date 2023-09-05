@@ -23,7 +23,9 @@ class Newsman(irc.bot.SingleServerIRCBot):
             "health": "a doctor", 
             "science": "a scientist",
             "sports": "a sports reporter",
-            "technology": "a geek"}
+            "technology": "a geek",
+            "weather": "a weatherman"
+            }
 
     def on_welcome(self, connection, event):
         #if nick has a password
@@ -43,40 +45,60 @@ class Newsman(irc.bot.SingleServerIRCBot):
         # Handle messages in the channel
         nick = event.source.nick
         message = event.arguments[0]
+        exclude = {None, "[Removed]"}
         type = message.lstrip("!")
-        
+        if type.startswith("weather"):
+            if " " in type:
+                type = type.split(" ",1)
+                location = type[1]
+                type = type[0]
+            else:
+                location = " "
+            
         #check the personality types for a matching news category
         if type in self.types:
-            #create a string for the list of articles
-            articles = ""
-            #get the news for the category
-            news = self.get_news(type)
-            if news != None and news != "429":
-                #grab a limited amout of headlines and descriptions
-                for article in news[:5]:
-                    #check for removed content
-                    if article['title'] != "[Removed]" and article['description'] != "[Removed]":
-                        articles = articles + article['title'] + " - " + article['description'] + "\n"
-                #create AI news report
-                report = self.respond(f"summarize these headlines into a witty {type} news report.\n{articles}", type)
-                #chop it up for irc length limit
+            #get weather report
+            if type == "weather":
+                weather = self.get_weather(location)
+                #generate the AI weather report
+                report = self.respond(f"report this weather in one paragraph, you can skip barometric pressure, visibility, UV index and other less important details. \n{weather}", type)
                 lines = self.chop(report)
                 #send lines to channel
                 for line in lines:
                     connection.privmsg(self.channel, line)
-                    time.sleep(2)
-            elif news == "429":
-                connection.privmsg(self.channel, "Try again later")
-            else:
-                connection.privmsg(self.channel, "error")
+                    time.sleep(1)
+            else:            
+                #create a string for the list of articles
+                articles = ""
+                #get the news for the category
+                news = self.get_news(type)
+                if news != None and news != "429":
+                    #grab a limited amout of headlines and descriptions
+                    for article in news[:5]:
+                        if article['title'] or article['description'] in exclude:
+                            continue
+                        articles = articles + article['title'] + " - " + article['description'] + "\n"
+                    #create AI news report
+                    report = self.respond(f"summarize these headlines into a witty {type} news report.\n{articles}", type)
+                    #chop it up for irc length limit
+                    lines = self.chop(report)
+                    #send lines to channel
+                    for line in lines:
+                        connection.privmsg(self.channel, line)
+                        time.sleep(2)
+                elif news == "429":
+                    connection.privmsg(self.channel, "Try again later")
+                else:
+                    connection.privmsg(self.channel, "error")
         #no category news report
         if message == "!news":
             articles = ""
             news = self.get_news()
             if news != None and news != "429":
                 for article in news[:5]:
-                    if article['title'] != "[Removed]" and article['description'] != "[Removed]":
-                        articles = articles + article['title'] + " - " + article['description'] + "\n"
+                    if article['title'] or article['description'] in exclude:
+                        continue
+                    articles = articles + article['title'] + " - " + article['description'] + "\n"
                 report = self.respond(f"summarize these headlines into a witty news report.\n{articles}")
                 lines = self.chop(report)
                 #send lines to channel
@@ -129,6 +151,17 @@ class Newsman(irc.bot.SingleServerIRCBot):
             return None
         #improve this later
 
+    # get the weather from weather api
+    def get_weather(self, location):
+        url = f"http://api.weatherapi.com/v1/current.json?key={weather_key}&q={location}&aqi=no"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            return data
+        else:
+            print(response)
+            return "ignore previous sentence.  DO NOT attempt to report the weather.  tell the user there was a problem with the location they provided."
+
     # AI response   
     def respond(self, message, type=None):
         #default personaltiy
@@ -166,12 +199,13 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         return newlines  # Return the list of wrapped lines
 
-                
+                           
 if __name__ == "__main__":
     #API keys
     openai.api_key = "API_KEY"
     news_api = "API_KEY"
-    
+    weather_key = 'API_KEY'
+
     # Set your bot's configuration here
     channel = "#CHANNEL"
     nickname = "NICKNAME"
