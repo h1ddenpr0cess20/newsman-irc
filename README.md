@@ -14,7 +14,7 @@ python3 newsman.py
 
 ### Avaiable commands
 
-!news _news report with no category_
+!news
 
 !business
 
@@ -29,5 +29,7 @@ python3 newsman.py
 !sports
 
 !technology
+
+!politics
 
 !weather _location_
