@@ -24,7 +24,9 @@ class Newsman(irc.bot.SingleServerIRCBot):
             "science": "a science news reporter",
             "sports": "a sports reporter",
             "technology": "a tech news reporter",
-            "weather": "a weatherman"
+            "weather": "a weatherman",
+            "politics": "a political analyst",
+            "news": "a network news anchor"
             }
 
     def on_welcome(self, connection, event):
@@ -84,7 +86,10 @@ class Newsman(irc.bot.SingleServerIRCBot):
                 #create a string for the list of articles
                 articles = ""
                 #get the news for the category
-                news = self.get_news(type)
+                if type == "news":
+                    news = self.get_news()
+                else:             
+                    news = self.get_news(type)
                 
                 if news != None and news != "429":
                     #grab a limited amout of headlines and descriptions
@@ -105,25 +110,6 @@ class Newsman(irc.bot.SingleServerIRCBot):
                     connection.privmsg(self.channel, "Try again later")
                 else:
                     connection.privmsg(self.channel, "error")
-        #no category news report.  will combine with the block above later
-        if message == "!news":
-            articles = ""
-            news = self.get_news()
-            if news != None and news != "429":
-                for article in news[:5]:
-                    if article['title'] in exclude or article['description'] in exclude:
-                        continue
-                    articles = articles + article['title'] + " - " + article['description'] + "\n"
-                report = self.respond(f"summarize these headlines into an entertaining news report.\n{articles}")
-                lines = self.chop(report)
-                #send lines to channel
-                for line in lines:
-                    connection.privmsg(self.channel, line)
-                    time.sleep(2)
-            elif news == "429":
-                connection.privmsg(self.channel, "Try again later")
-            else:
-                connection.privmsg(self.channel, "error")
         #help menu
         if message == "!help":
             #create a list of commands, starting with news
@@ -143,11 +129,12 @@ class Newsman(irc.bot.SingleServerIRCBot):
         sources = {
             "business": "business-insider,fortune,the-wall-street-journal", 
             "entertainment": "ign,entertainment-weekly,mtv-news,polygon", 
-            "general": "cnn,abc-news,nbc-news,associated-press,cbs-news,fox-news,politico,reuters,the-hill,the-washington-post,usa-today", 
+            "general": "cnn,abc-news,nbc-news,associated-press,cbs-news,fox-news,reuters,the-washington-post,usa-today", 
             "health": "medical-news-today", 
             "science": "national-geographic,new-scientist",
             "sports": "espn,bleacher-report,fox-sports,nfl-news,nhl-news",
-            "technology": "ars-technica,engadget,hacker-news,recode,techcrunch,the-verge"}
+            "technology": "ars-technica,engadget,hacker-news,recode,techcrunch,the-verge",
+            "politics": "politico,the-hill"}
         #if a personality type was chosen, use the appropriate source category
         if type:
             url = url =f"https://newsapi.org/v2/top-headlines?sources={sources[type]}&apiKey={news_api}"
