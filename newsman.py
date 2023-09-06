@@ -17,6 +17,8 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         #personality types
         self.types = {
+            "news": "a network news anchor",
+            "weather": "a weatherman",
             "business": "a business news reporter", 
             "entertainment": "an entertainment news reporter", 
             "general": "a network news anchor", 
@@ -24,9 +26,8 @@ class Newsman(irc.bot.SingleServerIRCBot):
             "science": "a science news reporter",
             "sports": "a sports reporter",
             "technology": "a tech news reporter",
-            "weather": "a weatherman",
-            "politics": "a political analyst",
-            "news": "a network news anchor"
+            "politics": "a political analyst"
+            
             }
 
     def on_welcome(self, connection, event):
@@ -40,7 +41,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         #optional join message
         greet = "introduce yourself in 1-3 sentences without a name"
-        response = self.respond(greet)
+        response = self.respond(greet, "news")
         lines = self.chop(response +  "  Type !help to learn how to use me.")
         for line in lines:
             connection.privmsg(self.channel, line)
@@ -111,9 +112,9 @@ class Newsman(irc.bot.SingleServerIRCBot):
                 else:
                     connection.privmsg(self.channel, "error")
         #help menu
-        if message == "!help":
+        if type == "help":
             #create a list of commands, starting with news
-            commands = "news "
+            commands = ""
             #add the rest from types
             for command in self.types:
                 commands = commands + command + " "
@@ -164,13 +165,8 @@ class Newsman(irc.bot.SingleServerIRCBot):
             return "ignore previous sentence.  DO NOT attempt to report the weather.  tell the user there was a problem with the location they provided."
 
     # AI response   
-    def respond(self, message, type=None):
-        #default personaltiy
-        if type == None:
-            persona = "a network news anchor"
-        #a personality was chosen
-        else:
-            persona = self.types[type]
+    def respond(self, message, type):
+        persona = self.types[type]
         #create system prompt
         self.personality = f"assume the personality of {persona} with a name you make up and roleplay as them."
         response = openai.ChatCompletion.create(model='gpt-3.5-turbo',
