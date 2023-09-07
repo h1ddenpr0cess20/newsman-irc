@@ -1,31 +1,20 @@
 import random
 
 def name_generator():
-    first_names  =  ["Max",  "Alexa",  "Nate",  "Emma",  "Ryder",  "Ava",   "Jaxon",
-                "Olivia",  "Dylan",  "Harper",  "Brody",  "Ella",  "Hunter",  "Mia",   "Tanner",
-                "Sophia", "Jackson", "Chloe", "Cooper",  "Amelia",  "Austin",  "Lily",  "Logan",
-                "Abigail", "Carter", "Emily",  "Grayson",  "Sofia",  "Jayden",  "Zoe",  "Mason",
-                "Nora",  "Liam",  "Scarlett",  "Lucas",  "Hazel",  "Leo",  "Madelyn",   "Ethan",
-                "Avery", "Owen", "Aria", "Wyatt", "Mila", "Henry",  "Layla",  "Jack",  "Evelyn",
-                "Luke", "Grace", "Nathan", "Victoria",  "Ryan",  "Ariana",  "Evan",  "Penelope",
-                "Joshua", "Brooklyn", "Brandon", "Audrey", "Jordan", "Clara", "Levi",  "Stella",
-                "David", "Savannah", "Samuel", "Zara",  "Daniel",  "Violet",  "Isaac",  "Elena",
-                "Andrew",  "Naomi",  "James",  "Camila",  "Nolan",  "Ruby",  "Josiah",  "Maria",
-                "Gabriel", "Alice", "Anthony",  "Alexis",  "John",  "Elise",  "Adam",  "Gianna",
-                "Michael", "Natalie", "Benjamin", "Faith", "William", "Aurora"]
+    first_names  =  ['Aurora', 'Grayson', 'Gianna', 'Layla', 'Mila', 'Benjamin', 'Stella', 'Nate', 'Alexa', 'Daniel', 'Mia', 'Avery', 'Zara', 'Scarlett', 
+                    'Clara', 'Jaxon', 'Maria', 'Dylan', 'Logan', 'Isaac', 'Savannah', 'Amelia', 'Jackson', 'Gabriel', 'Lucas', 'Evan', 'Hunter', 'Jayden', 
+                    'Michael', 'Leo', 'Austin', 'Nathan', 'Sofia', 'Cooper', 'Levi', 'Carter', 'Aria', 'Ariana', 'Emma', 'Zoe', 'Brooklyn', 'Chloe', 'Ryder', 
+                    'Jordan', 'Lily', 'Elena', 'Olivia', 'Audrey', 'Ava', 'Evelyn', 'Violet', 'Adam', 'Owen', 'Liam', 'Faith', 'Harper', 'Brody', 'Emily', 
+                    'Brandon', 'Wyatt', 'Alice', 'Luke', 'Natalie', 'Josiah', 'Max', 'Nolan', 'Abigail', 'Anthony', 'Tanner', 'Joshua', 'Sophia', 'Andrew', 
+                    'Ella', 'Samuel', 'Hazel', 'Nora', 'Ruby', 'Penelope', 'Mason', 'Ethan', 'Henry', 'Victoria', 'Alexis', 'Jack', 'Camila', 'Grace', 'Naomi', 
+                    'David', 'John', 'James', 'Madelyn', 'Elise', 'Ryan', 'William']
 
-    last_names = ["Williams", "Davis", "Anderson", "Gonzalez", "Martinez", "Harris",
-                "Lopez", "Jackson", "Smith", "Johnson", "Brown",  "Wilson",  "Taylor",  "Clark",
-                "Lewis", "Hall", "Adams", "Hill", "Turner", "White",  "Green",  "Allen",  "Lee",
-                "Baker", "Murphy",  "Roberts",  "Cook",  "Carter",  "James",  "Gray",  "Rivera",
-                "Collins", "Bell", "Wright", "Perez", "Stewart", "Bailey",  "Howard",  "Miller",
-                "Davis", "Sullivan", "Rogers", "Reed", "Gomez", "Howard", "Robinson",  "Thomas",
-                "Morgan", "Cruz", "Young", "Parker",  "Foster",  "Garcia",  "Reyes",  "Russell",
-                "Simmons", "Mitchell", "Perry", "Sanchez", "Fisher", "Flores", "Evans",  "Diaz",
-                "Simmons", "Murillo", "Ramirez", "Fletcher", "Alexander",  "Jones",  "Thompson",
-                "Hernandez", "Hughes", "Phillips",  "Scott",  "Bennett",  "Jenkins",  "Stevens",
-                "Watson",  "Robinson-Woods",  "Young-Bailey",  "Harris-Miller",  "Carter-Smith",
-                "Williams-Cruz", "Bell-Wright", "Gomez-Davis"]
+    last_names = ['Williams', 'Adams', 'Taylor', 'Rogers', 'Young', 'Perez', 'Thompson', 'Miller', 'Scott', 'Thomas', 'Sanchez', 'Lee', 
+                    'Fletcher', 'Russell', 'Martinez', 'Anderson', 'Stewart', 'Bailey', 'Johnson', 'Foster', 'Lopez', 'Garcia', 'Reyes', 
+                    'Jackson', 'Simmons', 'Alexander', 'Cruz', 'Cook', 'Clark', 'James', 'Diaz', 'Brown', 'Wright', 'Allen', 'Bell', 'Hernandez', 
+                    'Phillips', 'Stevens', 'Harris', 'Turner', 'Morgan', 'Hughes', 'Watson', 'Reed', 'White', 'Parker', 'Wilson', 'Davis', 'Gray', 
+                    'Howard', 'Gonzalez', 'Jenkins', 'Gomez', 'Collins', 'Smith', 'Bennett', 'Ramirez', 'Robinson', 'Murillo', 'Hill', 'Carter', 
+                    'Rivera', 'Mitchell', 'Baker', 'Evans', 'Green', 'Lewis', 'Fisher', 'Perry', 'Flores', 'Sullivan', 'Hall', 'Murphy', 'Roberts', 'Jones']
     
     first_name = random.choice(first_names)
     last_name = random.choice(last_names)

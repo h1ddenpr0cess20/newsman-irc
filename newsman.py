@@ -23,7 +23,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
             "business": f"a business news reporter named {namegen.name_generator()}", 
             "entertainment": f"an entertainment news reporter named {namegen.name_generator()}", 
             "general": f"a network news anchor named {namegen.name_generator()}", 
-            "health": f"a doctor with a name you make up", 
+            "health": f"a doctor named Dr. {namegen.name_generator()}", 
             "science": f"a science news reporter named {namegen.name_generator()}",
             "sports": f"a sports reporter named {namegen.name_generator()}",
             "technology": f"a tech news reporter named {namegen.name_generator()}",
@@ -107,7 +107,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
                     #send lines to channel
                     for line in lines:
                         connection.privmsg(self.channel, line)
-                        time.sleep(2)
+                        time.sleep(3)
                 elif news == "429":
                     connection.privmsg(self.channel, "Try again later")
                 else:
@@ -171,7 +171,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
         #create system prompt
         self.personality = f"assume the personality of {persona} and roleplay as them."
         response = openai.ChatCompletion.create(model='gpt-3.5-turbo',
-                                                temperature=1,
+                                                temperature=.75,
                                                 messages=({"role": "system", "content": self.personality},
                                                             {"role": "user", "content": message}))
         #return the response text
