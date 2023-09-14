@@ -7,6 +7,7 @@ import openai
 import requests
 import textwrap
 import time
+import namegen
 
 class Newsman(irc.bot.SingleServerIRCBot):
     def __init__(self, channel, nickname, server, password=None, port=6667):
@@ -17,16 +18,16 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         #personality types
         self.types = {
-            "news": "a network news anchor",
-            "weather": "a weatherman",
-            "business": "a business news reporter", 
-            "entertainment": "an entertainment news reporter", 
-            "general": "a network news anchor", 
-            "health": "a doctor", 
-            "science": "a science news reporter",
-            "sports": "a sports reporter",
-            "technology": "a tech news reporter",
-            "politics": "a political analyst"
+            "news": f"a network news anchor named {namegen.name_generator()}",
+            "weather": f"a weatherman with a name you make up",
+            "business": f"a business news reporter named {namegen.name_generator()}", 
+            "entertainment": f"an entertainment news reporter named {namegen.name_generator()}", 
+            "general": f"a network news anchor named {namegen.name_generator()}", 
+            "health": f"a doctor named Dr. {namegen.name_generator()}", 
+            "science": f"a science news reporter named {namegen.name_generator()}",
+            "sports": f"a sports reporter named {namegen.name_generator()}",
+            "technology": f"a tech news reporter named {namegen.name_generator()}",
+            "politics": f"a political analyst named {namegen.name_generator()}"
             
             }
 
@@ -40,13 +41,12 @@ class Newsman(irc.bot.SingleServerIRCBot):
         connection.join(self.channel)
 
         #optional join message
-        greet = "introduce yourself in 1-3 sentences without a name"
-        response = self.respond(greet, "news")
-        lines = self.chop(response +  "  Type !help to learn how to use me.")
-        for line in lines:
-            connection.privmsg(self.channel, line)
-            time.sleep(1)
-
+        # greet = "introduce yourself in 1-3 sentences"
+        # response = self.respond(greet, "news")
+        # lines = self.chop(response +  "  Type !help to learn how to use me.")
+        # for line in lines:
+        #     connection.privmsg(self.channel, line)
+        #     time.sleep(1)
 
     def on_nicknameinuse(self, connection, event):
         #add an underscore if nickname is in use
@@ -75,9 +75,10 @@ class Newsman(irc.bot.SingleServerIRCBot):
         if type in self.types:
             #get weather report
             if type == "weather":
+                #you can tweak the fields the API returns under API Response Fields on the weatherapi website
                 weather = self.get_weather(location)
                 #generate the AI weather report
-                report = self.respond(f"report this weather in one paragraph, you can skip barometric pressure, visibility, UV index and other less important details. \n{weather}", type)
+                report = self.respond(f"report this weather in one paragraph\n{weather}", type)
                 lines = self.chop(report)
                 #send lines to channel
                 for line in lines:
@@ -98,15 +99,15 @@ class Newsman(irc.bot.SingleServerIRCBot):
                     for article in news[:5]:
                         if article['title'] in exclude or article['description'] in exclude:
                             continue
-                        articles = articles + article['title'] + " - " + article['description'] + "\n"
+                        articles = articles + article['title'] + " - " + article['description'] + "\n\n"
                     #create AI news report
-                    report = self.respond(f"summarize these headlines into an entertaining {type} news report.\n{articles}", type)
+                    report = self.respond(f"summarize these headlines into an entertaining {type} news report.  do not write it like a script. \n{articles}", type)
                     #chop it up for irc length limit
                     lines = self.chop(report)
                     #send lines to channel
                     for line in lines:
                         connection.privmsg(self.channel, line)
-                        time.sleep(2)
+                        time.sleep(3)
                 elif news == "429":
                     connection.privmsg(self.channel, "Try again later")
                 else:
@@ -168,9 +169,9 @@ class Newsman(irc.bot.SingleServerIRCBot):
     def respond(self, message, type):
         persona = self.types[type]
         #create system prompt
-        self.personality = f"assume the personality of {persona} with a name you make up and roleplay as them."
+        self.personality = f"assume the personality of {persona} and roleplay as them."
         response = openai.ChatCompletion.create(model='gpt-3.5-turbo',
-                                                temperature=1,
+                                                temperature=.75,
                                                 messages=({"role": "system", "content": self.personality},
                                                             {"role": "user", "content": message}))
         #return the response text
