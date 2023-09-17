@@ -1,6 +1,8 @@
 # newsman-irc
 An AI newsroom for IRC which reports news by category in the style of a tv news report, including general, business, sports, entertainment, science, technology, health, and weather.  Powered by NewsAPI, WeatherAPI and OpenAI gpt-3.5-turbo.
 
+Matrix version available at [newsman-matrix](https://github.com/h1ddenpr0cess20/newsman-matrix)
+
 ## Setup
 ```
 pip3 install openai irc
