@@ -7,6 +7,7 @@ import openai
 import requests
 import textwrap
 import time
+import namegen
 
 class Newsman(irc.bot.SingleServerIRCBot):
     def __init__(self, channel, nickname, server, password=None, port=6667):
@@ -17,16 +18,16 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         #personality types
         self.types = {
-            "news": "a network news anchor",
-            "weather": "a weatherman",
-            "business": "a business news reporter", 
-            "entertainment": "an entertainment news reporter", 
-            "general": "a network news anchor", 
-            "health": "a doctor", 
-            "science": "a science news reporter",
-            "sports": "a sports reporter",
-            "technology": "a tech news reporter",
-            "politics": "a political analyst"
+            "news": f"a network news anchor named {namegen.name_generator()}",
+            "weather": f"a weatherman with a name you make up",
+            "business": f"a business news reporter named {namegen.name_generator()}", 
+            "entertainment": f"an entertainment news reporter named {namegen.name_generator()}", 
+            "general": f"a network news anchor named {namegen.name_generator()}", 
+            "health": f"a doctor named Dr. {namegen.name_generator()}", 
+            "science": f"a science news reporter named {namegen.name_generator()}",
+            "sports": f"a sports reporter named {namegen.name_generator()}",
+            "technology": f"a tech news reporter named {namegen.name_generator()}",
+            "politics": f"a political analyst named {namegen.name_generator()}"
             
             }
 
@@ -62,67 +63,76 @@ class Newsman(irc.bot.SingleServerIRCBot):
         nick = event.source.nick
         message = event.arguments[0]
         exclude = {None, "[Removed]"}
-        type = message.lstrip("!")
-        if type.startswith("weather"):
-            if " " in type:
-                type = type.split(" ",1)
-                location = type[1]
-                type = type[0]
-            else:
-                location = " "
-            
-        #check the personality types for a matching news category
-        if type in self.types:
-            #get weather report
-            if type == "weather":
-                weather = self.get_weather(location)
-                #generate the AI weather report
-                report = self.respond(f"report this weather in one paragraph, you can skip barometric pressure, visibility, UV index and other less important details. \n{weather}", type)
-                lines = self.chop(report)
-                #send lines to channel
-                for line in lines:
-                    connection.privmsg(self.channel, line)
-                    time.sleep(1)
-            else:            
-                #create a string for the list of articles
-                articles = ""
-                #get the news for the category
-                if type == "news":
-                    news = self.get_news()
-                else:             
-                    news = self.get_news(type)
-                
-                if news != None and news != "429":
-                    #grab a limited amout of headlines and descriptions
-                    #change how this works later by grabbing more articles, filtering the bad ones, then select 5 of them.  current way can result in too few articles being reported.
-                    for article in news[:5]:
-                        if article['title'] in exclude or article['description'] in exclude:
-                            continue
-                        articles = articles + article['title'] + " - " + article['description'] + "\n"
-                    #create AI news report
-                    report = self.respond(f"summarize these headlines into an entertaining {type} news report.\n{articles}", type)
-                    #chop it up for irc length limit
-                    lines = self.chop(report)
-                    #send lines to channel
-                    for line in lines:
-                        connection.privmsg(self.channel, line)
-                        time.sleep(2)
-                elif news == "429":
-                    connection.privmsg(self.channel, "Try again later")
+        if message.startswith("!"):
+            type = message.lstrip("!")
+            if type.startswith("weather"):
+                if " " in type:
+                    type = type.split(" ",1)
+                    location = type[1]
+                    type = type[0]
                 else:
-                    connection.privmsg(self.channel, "error")
-        #help menu
-        if type == "help":
-            #create a list of commands, starting with news
-            commands = ""
-            #add the rest from types
-            for command in self.types:
-                commands = commands + command + " "
-            help_message = f"Newsman, an AI newsroom.  Avaiable commands: {commands}"
-            #send help message as notice
-            connection.notice(nick, help_message)
-            time.sleep(3)
-            connection.notice(nick, "Available at https://github.com/h1ddenpr0cess20/newsman-irc")
+                    location = " "
+                
+            #check the personality types for a matching news category
+            if type in self.types:
+                #get weather report
+                if type == "weather":
+                    #you can tweak the fields the API returns under API Response Fields on the weatherapi website
+                    weather = self.get_weather(location)
+                    #generate the AI weather report
+                    try:
+                        report = self.respond(f"report this weather in one paragraph\n{weather}", type)
+                        lines = self.chop(report)
+                        #send lines to channel
+                        for line in lines:
+                            connection.privmsg(self.channel, line)
+                            time.sleep(1)
+                    except:
+                        pass
+                
+                else:
+                    #get current time
+                    current_time = self.get_time()            
+                    #create a string for the list of articles
+                    articles = ""
+                    #get the news for the category
+                    if type == "news":
+                        news = self.get_news()
+                    else:             
+                        news = self.get_news(type)
+                    
+                    if news != None and news != "429":
+                        #grab a limited amout of headlines and descriptions
+                        #change how this works later by grabbing more articles, filtering the bad ones, then select 5 of them.  current way can result in too few articles being reported.
+                        for article in news[:5]:
+                            if article['title'] in exclude or article['description'] in exclude:
+                                continue
+                            articles = articles + article['title'] + " - " + article['description'] + "\n\n"
+                        #create AI news report
+                        try:
+                            report = self.respond(f"summarize these headlines into an entertaining {type} news report.  do not write it like a script. \n{articles}", type)
+                            #chop it up for irc length limit
+                            lines = self.chop(report)
+                            #send lines to channel
+                            for line in lines:
+                                connection.privmsg(self.channel, line)
+                                time.sleep(3)
+                        except:
+                            pass
+                    elif news == "429":
+                        connection.privmsg(self.channel, "Try again later")
+                    else:
+                        connection.privmsg(self.channel, "error")
+            #help menu
+            if type == "help":
+                commands = ""
+                for command in self.types:
+                    commands = commands + command + " "
+                help_message = f"Newsman, an AI newsroom.  Avaiable commands: {commands}"
+                #send help message as notice
+                connection.notice(nick, help_message)
+                time.sleep(3)
+                connection.notice(nick, "Available at https://github.com/h1ddenpr0cess20/newsman-irc")
 
     # get the news from news api
     def get_news(self, type=None):
