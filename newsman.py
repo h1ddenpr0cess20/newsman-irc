@@ -8,6 +8,7 @@ import requests
 import textwrap
 import time
 import namegen
+import namegen
 
 class Newsman(irc.bot.SingleServerIRCBot):
     def __init__(self, channel, nickname, server, password=None, port=6667):
@@ -18,6 +19,16 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         #personality types
         self.types = {
+            "news": f"a network news anchor named {namegen.name_generator()}",
+            "weather": f"a weatherman with a name you make up",
+            "business": f"a business news reporter named {namegen.name_generator()}", 
+            "entertainment": f"an entertainment news reporter named {namegen.name_generator()}", 
+            "general": f"a network news anchor named {namegen.name_generator()}", 
+            "health": f"a doctor named Dr. {namegen.name_generator()}", 
+            "science": f"a science news reporter named {namegen.name_generator()}",
+            "sports": f"a sports reporter named {namegen.name_generator()}",
+            "technology": f"a tech news reporter named {namegen.name_generator()}",
+            "politics": f"a political analyst named {namegen.name_generator()}"
             "news": f"a network news anchor named {namegen.name_generator()}",
             "weather": f"a weatherman with a name you make up",
             "business": f"a business news reporter named {namegen.name_generator()}", 
@@ -41,13 +52,12 @@ class Newsman(irc.bot.SingleServerIRCBot):
         connection.join(self.channel)
 
         #optional join message
-        greet = "introduce yourself in 1-3 sentences without a name"
-        response = self.respond(greet, "news")
-        lines = self.chop(response +  "  Type !help to learn how to use me.")
-        for line in lines:
-            connection.privmsg(self.channel, line)
-            time.sleep(1)
-
+        # greet = "introduce yourself in 1-3 sentences"
+        # response = self.respond(greet, "news")
+        # lines = self.chop(response +  "  Type !help to learn how to use me.")
+        # for line in lines:
+        #     connection.privmsg(self.channel, line)
+        #     time.sleep(1)
 
     def on_nicknameinuse(self, connection, event):
         #add an underscore if nickname is in use
@@ -178,9 +188,9 @@ class Newsman(irc.bot.SingleServerIRCBot):
     def respond(self, message, type):
         persona = self.types[type]
         #create system prompt
-        self.personality = f"assume the personality of {persona} with a name you make up and roleplay as them."
+        self.personality = f"assume the personality of {persona} and roleplay as them."
         response = openai.ChatCompletion.create(model='gpt-3.5-turbo',
-                                                temperature=1,
+                                                temperature=.75,
                                                 messages=({"role": "system", "content": self.personality},
                                                             {"role": "user", "content": message}))
         #return the response text
