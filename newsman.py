@@ -8,7 +8,6 @@ import requests
 import textwrap
 import time
 import namegen
-import namegen
 
 class Newsman(irc.bot.SingleServerIRCBot):
     def __init__(self, channel, nickname, server, password=None, port=6667):
@@ -19,16 +18,6 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
         #personality types
         self.types = {
-            "news": f"a network news anchor named {namegen.name_generator()}",
-            "weather": f"a weatherman with a name you make up",
-            "business": f"a business news reporter named {namegen.name_generator()}", 
-            "entertainment": f"an entertainment news reporter named {namegen.name_generator()}", 
-            "general": f"a network news anchor named {namegen.name_generator()}", 
-            "health": f"a doctor named Dr. {namegen.name_generator()}", 
-            "science": f"a science news reporter named {namegen.name_generator()}",
-            "sports": f"a sports reporter named {namegen.name_generator()}",
-            "technology": f"a tech news reporter named {namegen.name_generator()}",
-            "politics": f"a political analyst named {namegen.name_generator()}"
             "news": f"a network news anchor named {namegen.name_generator()}",
             "weather": f"a weatherman with a name you make up",
             "business": f"a business news reporter named {namegen.name_generator()}", 
@@ -90,19 +79,13 @@ class Newsman(irc.bot.SingleServerIRCBot):
                     #you can tweak the fields the API returns under API Response Fields on the weatherapi website
                     weather = self.get_weather(location)
                     #generate the AI weather report
-                    try:
-                        report = self.respond(f"report this weather in one paragraph\n{weather}", type)
-                        lines = self.chop(report)
-                        #send lines to channel
-                        for line in lines:
-                            connection.privmsg(self.channel, line)
-                            time.sleep(1)
-                    except:
-                        pass
-                
-                else:
-                    #get current time
-                    current_time = self.get_time()            
+                    report = self.respond(f"report this weather in one paragraph\n{weather}", type)
+                    lines = self.chop(report)
+                    #send lines to channel
+                    for line in lines:
+                        connection.privmsg(self.channel, line)
+                        time.sleep(1)
+                else:            
                     #create a string for the list of articles
                     articles = ""
                     #get the news for the category
@@ -119,16 +102,13 @@ class Newsman(irc.bot.SingleServerIRCBot):
                                 continue
                             articles = articles + article['title'] + " - " + article['description'] + "\n\n"
                         #create AI news report
-                        try:
-                            report = self.respond(f"summarize these headlines into an entertaining {type} news report.  do not write it like a script. \n{articles}", type)
-                            #chop it up for irc length limit
-                            lines = self.chop(report)
-                            #send lines to channel
-                            for line in lines:
-                                connection.privmsg(self.channel, line)
-                                time.sleep(3)
-                        except:
-                            pass
+                        report = self.respond(f"summarize these headlines into an entertaining {type} news report.  do not write it like a script. \n{articles}", type)
+                        #chop it up for irc length limit
+                        lines = self.chop(report)
+                        #send lines to channel
+                        for line in lines:
+                            connection.privmsg(self.channel, line)
+                            time.sleep(3)
                     elif news == "429":
                         connection.privmsg(self.channel, "Try again later")
                     else:
