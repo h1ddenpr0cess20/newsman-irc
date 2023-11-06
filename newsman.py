@@ -3,18 +3,22 @@
 #September 2023
 
 import irc.bot
-import openai
+from openai import OpenAI
 import requests
 import textwrap
 import time
 import namegen
 
 class Newsman(irc.bot.SingleServerIRCBot):
-    def __init__(self, channel, nickname, server, password=None, port=6667):
+    def __init__(self, api_key, channel, nickname, server, password=None, port=6667):
         # Initialize the bot
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port)], nickname, nickname)
         self.channel = channel
         self.password = password
+
+        self.openai = OpenAI(api_key=api_key)
+
+        self.model = 'gpt-3.5-turbo'
 
         #personality types
         self.types = {
@@ -169,12 +173,12 @@ class Newsman(irc.bot.SingleServerIRCBot):
         persona = self.types[type]
         #create system prompt
         self.personality = f"assume the personality of {persona} and roleplay as them."
-        response = openai.ChatCompletion.create(model='gpt-3.5-turbo',
+        response = self.openai.chat.completions.create(model=self.model,
                                                 temperature=.75,
                                                 messages=({"role": "system", "content": self.personality},
                                                             {"role": "user", "content": message}))
         #return the response text
-        response_text = response['choices'][0]['message']['content']
+        response_text = response.choices[0].message.content
         return response_text.strip()
     
     # split message for irc length limit
@@ -198,7 +202,7 @@ class Newsman(irc.bot.SingleServerIRCBot):
 
 if __name__ == "__main__":
     #API keys
-    openai.api_key = "API_KEY"
+    openai_key = "API_KEY"
     news_api = "API_KEY"
     weather_key = 'API_KEY'
 
@@ -209,7 +213,7 @@ if __name__ == "__main__":
     #optional password for registered nick
     #password = "password"
     try:
-        bot = Newsman(channel, nickname, server, password)
+        bot = Newsman(openai_key, channel, nickname, server, password)
     except:
-        bot = Newsman(channel, nickname, server)
+        bot = Newsman(openai_key, channel, nickname, server)
     bot.start()
